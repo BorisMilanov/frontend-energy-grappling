@@ -8,7 +8,7 @@ const { useBreakpoint } = Grid;
 import type { ColumnsType } from 'antd/es/table';
 import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { MenuOutlined, CloseOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { MenuOutlined, CloseOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { authStorage } from '../services/authApi';
 import herohomeImage from '../assets/herohome.jpg';
 import { scheduleData, type ScheduleItem } from '../data/scheduleData';
@@ -61,21 +61,10 @@ const BJJHomePage: React.FC = () => {
     { key: 'calendar-link', label: 'Календар' },
   ];
 
-  const userNavItems = [
-    { key: 'calendar-link', label: 'Календар' },
-    { key: 'members-link', label: 'Членове' },
-  ];
-
-  const adminNavItems = [
-    { key: 'admin-members', label: 'Членове (админ)' },
-    { key: 'admin-calendar', label: 'Календар (админ)' },
-  ];
 
   const navMenuClick = (e: { key: string }) => {
     if (e.key === 'calendar-link') navigate('/calendar');
     else if (e.key === 'members-link') navigate('/members');
-    else if (e.key === 'admin-calendar') navigate('/admin/calendar');
-    else if (e.key === 'admin-members') navigate('/admin/members');
     else scrollTo(e.key);
   };
 
@@ -83,7 +72,7 @@ const BJJHomePage: React.FC = () => {
     <ConfigProvider theme={{ token: { colorPrimary: '#1890ff', borderRadius: 8 } }}>
       <Layout style={{ minHeight: '100vh', background: '#fff' }}>
 
-        {/* ── HEADER ── */}
+
         <Header style={{
           position: 'fixed', zIndex: 1000, width: '100%',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -97,26 +86,15 @@ const BJJHomePage: React.FC = () => {
           </div>
           {/* Desktop nav */}
           <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-            {/* User menu */}
             <Menu
               theme="dark" mode="horizontal"
               defaultSelectedKeys={['hero']}
-              items={user ? userNavItems : publicNavItems}
+              items={publicNavItems}
               disabledOverflow
               onClick={navMenuClick}
               style={{ borderBottom: 'none', justifyContent: 'flex-end' }}
             />
-            {/* Admin menu — only shown for admins */}
-            {user?.role === 'admin' && (
-              <Menu
-                theme="dark" mode="horizontal"
-                items={adminNavItems}
-                disabledOverflow
-                onClick={navMenuClick}
-                style={{ borderBottom: 'none', background: '#002140', marginLeft: 8 }}
-              />
-            )}
-            {user ? (
+            {user && (
               <Dropdown
                 menu={{
                   items: [
@@ -125,23 +103,13 @@ const BJJHomePage: React.FC = () => {
                 }}
                 placement="bottomRight"
               >
-                <Button
-                  type="text"
-                  icon={<UserOutlined />}
-                  style={{ color: 'white', fontWeight: 600 }}
-                >
+                <Button type="text" icon={<UserOutlined />} style={{ color: 'white', fontWeight: 600 }}>
                   {user.firstName}
                 </Button>
               </Dropdown>
-            ) : (
-              <Space>
-                <Button type="text" style={{ color: 'white' }} onClick={() => navigate('/login')}>Влез</Button>
-                {/* <Button type="primary" onClick={() => navigate('/register')}>Регистрация</Button> */}
-              </Space>
             )}
           </div>
 
-          {/* Mobile hamburger */}
           <div
             className="mobile-burger"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -159,10 +127,7 @@ const BJJHomePage: React.FC = () => {
           }}>
             <Menu
               theme="dark" mode="vertical"
-              items={[
-                ...(user ? userNavItems : publicNavItems),
-                ...(user?.role === 'admin' ? adminNavItems : []),
-              ]}
+              items={publicNavItems}
               onClick={navMenuClick}
               style={{ borderRight: 'none' }}
             />
