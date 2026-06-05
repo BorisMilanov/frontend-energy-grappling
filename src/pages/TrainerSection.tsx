@@ -2,6 +2,7 @@ import React from 'react';
 import { Row, Col, Typography, Card, Tag, Avatar } from 'antd';
 import { Users, Trophy, Award, Star } from 'lucide-react';
 import { useScrollReveal, revealStyle } from '../hooks/useScrollReveal';
+import trenerImg from '../assets/trener.jpg';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -27,7 +28,7 @@ const TrainerSection: React.FC = () => {
             <div style={{ position: 'relative', display: 'inline-block' }}>
               <Avatar
                 size={340}
-                src="/public/trener.jpg"
+                src={trenerImg}
               >
                 EG
               </Avatar>
