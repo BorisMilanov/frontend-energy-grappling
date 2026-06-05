@@ -6,8 +6,6 @@ import ScheduleTable from './pages/ScheduleTable';
 
 import CalendarPage from './pages/CalendarPage';
 
-import ProtectedRoute from './components/ProtectedRoute';
-
 const Price: React.FC = () => <h2 style={{ padding: 40 }}>Pricing Table</h2>;
 const About: React.FC = () => <h2 style={{ padding: 40 }}>About the Team</h2>;
 
