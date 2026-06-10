@@ -19,9 +19,6 @@ function App(): React.JSX.Element {
         <Route path="/about" element={<About />} />
  
         <Route path="/calendar" element={<CalendarPage />} />
-        <Route
-         
-        />
       </Routes>
     </BrowserRouter>
   );

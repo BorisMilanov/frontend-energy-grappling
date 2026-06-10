@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
   Layout, Calendar, Badge, Typography, ConfigProvider,
-  Menu, Button, Space, Dropdown, Grid,
+  Menu, Button, Grid,
 } from 'antd';
-import { LeftOutlined, RightOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { BadgeProps, CalendarProps } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router';
-import { authStorage } from '../services/authApi';
 import { calendarApi, type CalendarEvent } from '../services/calendarApi';
 import { scheduleData, buildWeeklySchedule } from '../data/scheduleData';
 
@@ -39,7 +38,6 @@ const CalendarPage: React.FC = () => {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
-  const [user, setUser] = useState(authStorage.getUser);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [weekStart, setWeekStart] = useState(() => getMonday(dayjs()));
   const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs().startOf('day'));
@@ -47,12 +45,6 @@ const CalendarPage: React.FC = () => {
   useEffect(() => {
     calendarApi.getAll().then(setEvents).catch(() => {});
   }, []);
-
-  const handleLogout = () => {
-    authStorage.clear();
-    setUser(null);
-    navigate('/');
-  };
 
   const cellRender: CalendarProps<Dayjs>['cellRender'] = (current, info) => {
     if (info.type !== 'date') return info.originNode;
@@ -213,23 +205,6 @@ const CalendarPage: React.FC = () => {
             />
           )}
 
-          {user ? (
-            <Dropdown
-              menu={{
-                items: [{ key: 'logout', label: 'Изход', icon: <LogoutOutlined />, onClick: handleLogout }],
-              }}
-              placement="bottomRight"
-            >
-              <Button type="text" icon={<UserOutlined />} style={{ color: 'white', fontWeight: 600 }}>
-                {!isMobile && user.firstName}
-              </Button>
-            </Dropdown>
-          ) : (
-            <Space size={isMobile ? 4 : 8}>
-              <Button type="text" style={{ color: 'white', padding: isMobile ? '0 8px' : undefined }} onClick={() => navigate('/login')}>Влез</Button>
-              {!isMobile && <Button type="primary" onClick={() => navigate('/register')}>Регистрация</Button>}
-            </Space>
-          )}
         </Header>
 
         <Content style={{ marginTop: 64, padding: isMobile ? '16px 8px' : '40px 10%' }}>

@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import {
   Layout, Menu, Button, Row, Col, Typography, Card, Table,
-  Space, ConfigProvider, Tag, Dropdown, Grid,
+  Space, ConfigProvider, Tag, Grid,
 } from 'antd';
 
 const { useBreakpoint } = Grid;
 import type { ColumnsType } from 'antd/es/table';
 import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { MenuOutlined, CloseOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { authStorage } from '../services/authApi';
+import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import herohomeImage from '../assets/team.jpg';
 import { scheduleData, type ScheduleItem } from '../data/scheduleData';
 import { useScrollReveal, revealStyle } from '../hooks/useScrollReveal';
@@ -27,12 +26,6 @@ const BJJHomePage: React.FC = () => {
   const isMobile = !screens.md;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scheduleHover, setScheduleHover] = useState(false);
-  const [user, setUser] = useState(authStorage.getUser);
-
-  const handleLogout = () => {
-    authStorage.clear();
-    setUser(null);
-  };
 
   const { ref: benefitsRef, isVisible: benefitsVisible } = useScrollReveal();
   const { ref: scheduleRef, isVisible: scheduleVisible } = useScrollReveal();
@@ -64,7 +57,6 @@ const BJJHomePage: React.FC = () => {
 
   const navMenuClick = (e: { key: string }) => {
     if (e.key === 'calendar-link') navigate('/calendar');
-    else if (e.key === 'members-link') navigate('/members');
     else scrollTo(e.key);
   };
 
@@ -94,20 +86,6 @@ const BJJHomePage: React.FC = () => {
               onClick={navMenuClick}
               style={{ borderBottom: 'none', justifyContent: 'flex-end' }}
             />
-            {user && (
-              <Dropdown
-                menu={{
-                  items: [
-                    { key: 'logout', label: 'Изход', icon: <LogoutOutlined />, onClick: handleLogout },
-                  ],
-                }}
-                placement="bottomRight"
-              >
-                <Button type="text" icon={<UserOutlined />} style={{ color: 'white', fontWeight: 600 }}>
-                  {user.firstName}
-                </Button>
-              </Dropdown>
-            )}
           </div>
 
           <div
@@ -157,7 +135,7 @@ const BJJHomePage: React.FC = () => {
                 size="large"
                 style={isMobile ? { display: 'flex', alignItems: 'center', width: '100%' } : undefined}
               >
-                <Button onClick={() => navigate('/register')} type="primary" size="large" style={{ height: 50, padding: '0 40px', ...(isMobile && { width: 240 }) }}>
+                <Button onClick={() => scrollTo('contact')} type="primary" size="large" style={{ height: 50, padding: '0 40px', ...(isMobile && { width: 240 }) }}>
                   ЗАПИШИ СЕ СЕГА
                 </Button>
                 <Button ghost size="large" style={{ height: 50, ...(isMobile && { width: 240 }) }} onClick={() => scrollTo('schedule')}>
