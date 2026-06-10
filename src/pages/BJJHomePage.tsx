@@ -10,7 +10,7 @@ import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight } from 'lucide-rea
 import { useNavigate } from 'react-router';
 import { MenuOutlined, CloseOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { authStorage } from '../services/authApi';
-import herohomeImage from '../assets/herohome.jpg';
+import herohomeImage from '../assets/team.jpg';
 import { scheduleData, type ScheduleItem } from '../data/scheduleData';
 import { useScrollReveal, revealStyle } from '../hooks/useScrollReveal';
 import TrainerSection from './TrainerSection';
