@@ -49,7 +49,7 @@ const BJJHomePage: React.FC = () => {
   const publicNavItems = [
     { key: 'hero', label: 'Начало' },
     { key: 'schedule', label: 'График' },
-    { key: 'trainer', label: 'Треньор' },
+    { key: 'trainer', label: 'Треньорите' },
     { key: 'contact', label: 'Контакти' },
     { key: 'calendar-link', label: 'Календар' },
   ];
