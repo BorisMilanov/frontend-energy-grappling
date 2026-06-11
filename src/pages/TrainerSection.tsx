@@ -9,6 +9,7 @@ const { Title, Paragraph, Text } = Typography;
 
 const TrainerSection: React.FC = () => {
   const { ref, isVisible } = useScrollReveal();
+  const { ref: ref2, isVisible: isVisible2 } = useScrollReveal();
 
   return (
     <section id="trainer" style={{ padding: '90px 10%', background: '#fafafa' }}>
@@ -17,9 +18,9 @@ const TrainerSection: React.FC = () => {
         {/* Heading */}
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <Tag color="blue" style={{ fontSize: 14, padding: '6px 18px', marginBottom: 12 }}>
-            Треньор
+            Треньорите
           </Tag>
-          <Title level={2} style={{ marginBottom: 0 }}>Запознай се с треньора</Title>
+          <Title level={2} style={{ marginBottom: 0 }}>Запознай се с треньорите</Title>
         </div>
 
         <Row gutter={[48, 40]} align="middle" justify="center">
@@ -98,14 +99,12 @@ const TrainerSection: React.FC = () => {
 
         </Row>
       </div>
-       <div ref={ref} style={revealStyle(isVisible)}>
+       <div ref={ref2} style={revealStyle(isVisible2)}>
 
         {/* Heading */}
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <Tag color="blue" style={{ fontSize: 14, padding: '6px 18px', marginBottom: 12 }}>
-            Треньор
-          </Tag>
-          <Title level={2} style={{ marginBottom: 0 }}>Запознай се с треньора</Title>
+        
+          
         </div>
 
         <Row gutter={[48, 40]} align="middle" justify="center">

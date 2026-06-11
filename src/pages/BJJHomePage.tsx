@@ -63,8 +63,6 @@ const BJJHomePage: React.FC = () => {
   return (
     <ConfigProvider theme={{ token: { colorPrimary: '#1890ff', borderRadius: 8 } }}>
       <Layout style={{ minHeight: '100vh', background: '#fff' }}>
-
-
         <Header style={{
           position: 'fixed', zIndex: 1000, width: '100%',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
