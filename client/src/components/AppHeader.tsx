@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
-import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
+import { MenuOutlined, CloseOutlined, LoginOutlined, UserAddOutlined, LogoutOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { useLocation, useNavigate } from 'react-router';
+
+import { clearSession, getUser } from '../services/authApi';
 
 const { Header } = Layout;
 
 // Define your clean structure array
-const menuItems = [
+const baseItems = [
   { key: '/', label: 'Начало' },
   { key: '/graphic', label: 'ScheduleTable' },
   { key: '/price', label: 'Price' },
   { key: '/about', label: 'Контакти' },
 ];
+
+const LOGOUT_KEY = 'logout';
+
+// Keys that are real pages; everything else is a section to scroll to on the home page.
+const ROUTE_KEYS = new Set(['/chat', '/login', '/register']);
 
 interface CustomHeaderProps {
   scrollToSection: (id: string) => void;
@@ -19,12 +27,37 @@ interface CustomHeaderProps {
 
 const CustomHeader: React.FC<CustomHeaderProps> = ({ scrollToSection }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Read on every render so the bar flips right after login / logout.
+  const user = getUser();
+
+  const menuItems: MenuProps['items'] = user
+    ? [
+        ...baseItems,
+        { key: '/chat', label: 'Чат' },
+        { key: LOGOUT_KEY, label: `Изход (${user.full_name})`, icon: <LogoutOutlined /> },
+      ]
+    : [
+        ...baseItems,
+        { key: '/login', label: 'Вход', icon: <LoginOutlined /> },
+        { key: '/register', label: 'Регистрация', icon: <UserAddOutlined /> },
+      ];
+
+  // Highlight the current page; on the home page the scroll links all fall back to "Начало".
+  const selectedKeys = [ROUTE_KEYS.has(location.pathname) ? location.pathname : '/'];
 
   // Ant Design Menu onClick handler signature
   const handleMenuClick: MenuProps['onClick'] = (info) => {
     const path = info.key; // e.g., '/graphic' or '/'
 
-    if (path === '/') {
+    if (path === LOGOUT_KEY) {
+      clearSession();
+      navigate('/login');
+    } else if (ROUTE_KEYS.has(path)) {
+      navigate(path);
+    } else if (path === '/') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       // Remove the leading slash to match your section ID (e.g., 'graphic')
@@ -61,10 +94,10 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ scrollToSection }) => {
           <Menu
             theme="dark"
             mode="horizontal"
-            defaultSelectedKeys={['/']}
+            selectedKeys={selectedKeys}
             items={menuItems} // Passes your configuration array directly here
             onClick={handleMenuClick} // Intercepts the click events uniformly
-            style={{ minWidth: '400px', borderBottom: 'none', justifyContent: 'flex-end' }}
+            style={{ minWidth: '520px', borderBottom: 'none', justifyContent: 'flex-end' }}
           />
         </div>
 
@@ -94,7 +127,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ scrollToSection }) => {
           <Menu
             theme="dark"
             mode="vertical"
-            defaultSelectedKeys={['/']}
+            selectedKeys={selectedKeys}
             items={menuItems}
             onClick={handleMenuClick}
             style={{ borderRight: 'none' }}

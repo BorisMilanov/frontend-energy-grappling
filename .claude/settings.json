@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/python.exe -m pip install -q websockets)",
+      "Bash(PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe __TRACKED_VAR__/chat_smoke.py)",
+      "Bash(echo \"TSC_EXIT:$?\")",
+      "Bash(npx eslint *)",
+      "Bash(echo \"LINT_EXIT:$?\")"
+    ]
+  }
+}

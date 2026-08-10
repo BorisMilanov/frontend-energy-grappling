@@ -1,4 +1,13 @@
-# React + TypeScript + Vite
+# Energy Grappling
+
+```
+client/   React + TypeScript + Vite frontend  (npm run dev  -> http://localhost:5173)
+server/   FastAPI + JWT backend               (uvicorn main:app --reload --port 8000)
+```
+
+Every npm command runs from `client/`; see [server/README.md](server/README.md) for the API.
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

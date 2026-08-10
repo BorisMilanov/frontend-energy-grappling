@@ -8,8 +8,12 @@ const { useBreakpoint } = Grid;
 import type { ColumnsType } from 'antd/es/table';
 import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  MenuOutlined, CloseOutlined, LoginOutlined, UserAddOutlined,
+  LogoutOutlined, MessageOutlined,
+} from '@ant-design/icons';
 import herohomeImage from '../assets/team.jpg';
+import { clearSession, getUser } from '../services/authApi';
 import { scheduleData, type ScheduleItem } from '../data/scheduleData';
 import { useScrollReveal, revealStyle } from '../hooks/useScrollReveal';
 import TrainerSection from './TrainerSection';
@@ -46,17 +50,33 @@ const BJJHomePage: React.FC = () => {
     setMobileOpen(false);
   };
 
+  // Re-read on every render so the bar flips right after login / logout.
+  const currentUser = getUser();
+
   const publicNavItems = [
     { key: 'hero', label: 'Начало' },
     { key: 'schedule', label: 'График' },
     { key: 'trainer', label: 'Треньорите' },
     { key: 'contact', label: 'Контакти' },
     { key: 'calendar-link', label: 'Календар' },
+    ...(currentUser
+      ? [
+          { key: '/chat', label: 'Чат', icon: <MessageOutlined /> },
+          { key: 'logout', label: 'Изход', icon: <LogoutOutlined /> },
+        ]
+      : [
+          { key: '/login', label: 'Вход', icon: <LoginOutlined /> },
+          { key: '/register', label: 'Регистрация', icon: <UserAddOutlined /> },
+        ]),
   ];
 
 
   const navMenuClick = (e: { key: string }) => {
     if (e.key === 'calendar-link') navigate('/calendar');
+    else if (e.key === 'logout') {
+      clearSession();
+      navigate('/login');
+    } else if (e.key.startsWith('/')) navigate(e.key);
     else scrollTo(e.key);
   };
 
