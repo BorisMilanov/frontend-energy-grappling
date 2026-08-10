@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "frontend",
+  "name": "energygrappling",
   "compatibility_date": "2026-06-02",
   "observability": {
     "enabled": true
@@ -11,5 +11,11 @@
   },
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  // Both hostnames must exist as records in the energygrappling.com zone before the first
+  // deploy; wrangler attaches them to this Worker and manages the certificates.
+  "routes": [
+    { "pattern": "energygrappling.com", "custom_domain": true },
+    { "pattern": "www.energygrappling.com", "custom_domain": true }
   ]
 }

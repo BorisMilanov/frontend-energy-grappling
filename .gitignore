@@ -30,3 +30,6 @@ dist-ssr
 !.dev.vars.example
 .env*
 !.env.example
+# Vite env files hold public build-time config only (no secrets) and the deploy build needs them.
+!.env.development
+!.env.production

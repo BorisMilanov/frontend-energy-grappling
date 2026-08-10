@@ -1,0 +1,19 @@
+# Cloudflare Tunnel config — the easy self-hosted route.
+# No open ports, no port-forwarding on the router, no TLS certificate to manage:
+# cloudflared dials out to Cloudflare and the edge terminates TLS for you.
+#
+# Install to /etc/cloudflared/config.yml after running:
+#   cloudflared tunnel login
+#   cloudflared tunnel create energygrappling
+#   cloudflared tunnel route dns energygrappling api.energygrappling.com
+#
+# Replace <TUNNEL-ID> with the id printed by `tunnel create`.
+
+tunnel: <TUNNEL-ID>
+credentials-file: /etc/cloudflared/<TUNNEL-ID>.json
+
+ingress:
+  - hostname: api.energygrappling.com
+    service: http://127.0.0.1:8000
+  # Everything else is refused.
+  - service: http_status:404

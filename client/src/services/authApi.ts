@@ -1,4 +1,5 @@
-export const API_BASE = 'http://localhost:8000/api';
+// Set per environment in .env.development / .env.production (see client/.env.example).
+export const API_BASE = `${import.meta.env.VITE_API_URL ?? 'http://localhost:8000'}/api`;
 const TOKEN_KEY = 'eg_token';
 const USER_KEY = 'eg_user';
 

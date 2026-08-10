@@ -5,7 +5,11 @@
       "Bash(PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe __TRACKED_VAR__/chat_smoke.py)",
       "Bash(echo \"TSC_EXIT:$?\")",
       "Bash(npx eslint *)",
-      "Bash(echo \"LINT_EXIT:$?\")"
+      "Bash(echo \"LINT_EXIT:$?\")",
+      "Bash(echo \"TSC:$?\")",
+      "Bash(bash -n server/deploy/install.sh)",
+      "Bash(bash -n server/deploy/update.sh)",
+      "Bash(rm -rf client/dist)"
     ]
   }
 }

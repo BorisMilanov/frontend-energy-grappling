@@ -1,0 +1,19 @@
+# Caddy terminates TLS and proxies to uvicorn. WebSockets need no extra config —
+# reverse_proxy forwards the Upgrade handshake as-is.
+#
+# Use this file only if you expose ports 80/443 from the container (router port-forward
+# + Cloudflare DNS record set to "DNS only", grey cloud, so Let's Encrypt can reach it).
+# If you use the Cloudflare Tunnel route instead, you do not need Caddy at all.
+
+api.energygrappling.com {
+	encode zstd gzip
+
+	# Trust the reverse proxy chain in front of us, if any.
+	reverse_proxy 127.0.0.1:8000 {
+		header_up X-Forwarded-Proto https
+	}
+
+	log {
+		output file /var/log/caddy/api.energygrappling.com.log
+	}
+}

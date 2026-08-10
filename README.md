@@ -5,7 +5,8 @@ client/   React + TypeScript + Vite frontend  (npm run dev  -> http://localhost:
 server/   FastAPI + JWT backend               (uvicorn main:app --reload --port 8000)
 ```
 
-Every npm command runs from `client/`; see [server/README.md](server/README.md) for the API.
+Every npm command runs from `client/`; see [server/README.md](server/README.md) for the API
+and [DEPLOY.md](DEPLOY.md) for putting it on energygrappling.com (Cloudflare + Proxmox LXC).
 
 ## React + TypeScript + Vite
 
