@@ -24,8 +24,8 @@ function App(): React.JSX.Element {
  
         <Route path="/calendar" element={<CalendarPage />} />
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/api/auth/login" element={<LoginPage />} />
+        <Route path="/api/auth/register" element={<RegisterPage />} />
 
         <Route
           path="/chat"
