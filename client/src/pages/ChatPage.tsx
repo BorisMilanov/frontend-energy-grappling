@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import { useChatSocket } from '../hooks/useChatSocket';
 import { clearSession, getUser } from '../services/authApi';
 import { MAX_MESSAGE_LENGTH, type ChatMessage } from '../services/chatApi';
+import { ROUTES } from '../routes';
 
 const { Header, Content, Footer } = Layout;
 const { Text, Title } = Typography;
@@ -91,7 +92,7 @@ const ChatPage: React.FC = () => {
 
   const handleLogout = (): void => {
     clearSession();
-    navigate('/login', { replace: true });
+    navigate(ROUTES.login, { replace: true });
   };
 
   const statusInfo = STATUS_LABEL[status];

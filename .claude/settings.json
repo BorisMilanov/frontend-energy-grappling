@@ -27,7 +27,13 @@
       "Bash(ENVIRONMENT=production JWT_SECRET=test-secret-not-the-default-value CORS_ORIGINS=https://evil.example.com DATABASE_URL=sqlite:///./prodcheck.db .venv/Scripts/python.exe -m uvicorn main:app --port 8012)",
       "Bash(PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe deploy/smoke.py http://127.0.0.1:8012)",
       "Bash(echo \"SMOKE_EXIT:$?\")",
-      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://127.0.0.1:8012/api/auth/login -H \"Origin: https://evil.example.com\" -H \"Access-Control-Request-Method: POST\")"
+      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://127.0.0.1:8012/api/auth/login -H \"Origin: https://evil.example.com\" -H \"Access-Control-Request-Method: POST\")",
+      "Bash(python -)",
+      "Bash(ENVIRONMENT=production JWT_SECRET=test-secret-not-default DATABASE_URL=sqlite:///./prodcheck.db .venv/Scripts/python.exe -c ' *)",
+      "Bash(rm -f prodcheck.db)",
+      "Bash(ENVIRONMENT=production JWT_SECRET=test-secret-not-default DATABASE_URL=sqlite:///./prodcheck.db .venv/Scripts/python.exe -m uvicorn main:app --port 8013)",
+      "Bash(PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe deploy/smoke.py http://127.0.0.1:8013)",
+      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://127.0.0.1:8013/api/auth/login -H \"Origin: http://localhost:3000\" -H \"Access-Control-Request-Method: POST\")"
     ]
   }
 }

@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import herohomeImage from '../assets/team.jpg';
 import { clearSession, getUser } from '../services/authApi';
+import { ROUTES } from '../routes';
 import { scheduleData, type ScheduleItem } from '../data/scheduleData';
 import { useScrollReveal, revealStyle } from '../hooks/useScrollReveal';
 import TrainerSection from './TrainerSection';
@@ -61,21 +62,21 @@ const BJJHomePage: React.FC = () => {
     { key: 'calendar-link', label: 'Календар' },
     ...(currentUser
       ? [
-          { key: '/chat', label: 'Чат', icon: <MessageOutlined /> },
+          { key: ROUTES.chat, label: 'Чат', icon: <MessageOutlined /> },
           { key: 'logout', label: 'Изход', icon: <LogoutOutlined /> },
         ]
       : [
-          { key: '/api/auth/login', label: 'Вход', icon: <LoginOutlined /> },
-          { key: '/api/auth/register', label: 'Регистрация', icon: <UserAddOutlined /> },
+          { key: ROUTES.login, label: 'Вход', icon: <LoginOutlined /> },
+          { key: ROUTES.register, label: 'Регистрация', icon: <UserAddOutlined /> },
         ]),
   ];
 
 
   const navMenuClick = (e: { key: string }) => {
-    if (e.key === 'calendar-link') navigate('/calendar');
+    if (e.key === 'calendar-link') navigate(ROUTES.calendar);
     else if (e.key === 'logout') {
       clearSession();
-      navigate('/api/auth/login');
+      navigate(ROUTES.login);
     } else if (e.key.startsWith('/')) navigate(e.key);
     else scrollTo(e.key);
   };

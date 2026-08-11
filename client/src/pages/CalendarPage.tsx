@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import { useNavigate } from 'react-router';
 import { calendarApi, type CalendarEvent } from '../services/calendarApi';
 import { getUser } from '../services/authApi';
+import { ROUTES } from '../routes';
 import { scheduleData, buildWeeklySchedule } from '../data/scheduleData';
 
 const { useBreakpoint } = Grid;
@@ -201,10 +202,10 @@ const CalendarPage: React.FC = () => {
               items={[
                 { key: '/calendar', label: 'Календар' },
                 ...(getUser()
-                  ? [{ key: '/chat', label: 'Чат' }]
+                  ? [{ key: ROUTES.chat, label: 'Чат' }]
                   : [
-                      { key: '/login', label: 'Вход' },
-                      { key: '/register', label: 'Регистрация' },
+                      { key: ROUTES.login, label: 'Вход' },
+                      { key: ROUTES.register, label: 'Регистрация' },
                     ]),
               ]}
               onClick={(e) => navigate(e.key)}

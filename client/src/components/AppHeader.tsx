@@ -5,21 +5,19 @@ import type { MenuProps } from 'antd';
 import { useLocation, useNavigate } from 'react-router';
 
 import { clearSession, getUser } from '../services/authApi';
+import { PAGE_PATHS, ROUTES } from '../routes';
 
 const { Header } = Layout;
 
 // Define your clean structure array
 const baseItems = [
-  { key: '/', label: 'Начало' },
-  { key: '/graphic', label: 'ScheduleTable' },
-  { key: '/price', label: 'Price' },
-  { key: '/about', label: 'Контакти' },
+  { key: ROUTES.home, label: 'Начало' },
+  { key: ROUTES.schedule, label: 'ScheduleTable' },
+  { key: ROUTES.price, label: 'Price' },
+  { key: ROUTES.about, label: 'Контакти' },
 ];
 
 const LOGOUT_KEY = 'logout';
-
-// Keys that are real pages; everything else is a section to scroll to on the home page.
-const ROUTE_KEYS = new Set(['/chat', '/login', '/register']);
 
 interface CustomHeaderProps {
   scrollToSection: (id: string) => void;
@@ -36,17 +34,17 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ scrollToSection }) => {
   const menuItems: MenuProps['items'] = user
     ? [
         ...baseItems,
-        { key: '/chat', label: 'Чат' },
+        { key: ROUTES.chat, label: 'Чат' },
         { key: LOGOUT_KEY, label: `Изход (${user.full_name})`, icon: <LogoutOutlined /> },
       ]
     : [
         ...baseItems,
-        { key: '/login', label: 'Вход', icon: <LoginOutlined /> },
-        { key: '/register', label: 'Регистрация', icon: <UserAddOutlined /> },
+        { key: ROUTES.login, label: 'Вход', icon: <LoginOutlined /> },
+        { key: ROUTES.register, label: 'Регистрация', icon: <UserAddOutlined /> },
       ];
 
   // Highlight the current page; on the home page the scroll links all fall back to "Начало".
-  const selectedKeys = [ROUTE_KEYS.has(location.pathname) ? location.pathname : '/'];
+  const selectedKeys = [PAGE_PATHS.has(location.pathname) ? location.pathname : ROUTES.home];
 
   // Ant Design Menu onClick handler signature
   const handleMenuClick: MenuProps['onClick'] = (info) => {
@@ -54,10 +52,10 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ scrollToSection }) => {
 
     if (path === LOGOUT_KEY) {
       clearSession();
-      navigate('/login');
-    } else if (ROUTE_KEYS.has(path)) {
+      navigate(ROUTES.login);
+    } else if (PAGE_PATHS.has(path)) {
       navigate(path);
-    } else if (path === '/') {
+    } else if (path === ROUTES.home) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       // Remove the leading slash to match your section ID (e.g., 'graphic')

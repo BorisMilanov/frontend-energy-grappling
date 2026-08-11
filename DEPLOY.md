@@ -49,8 +49,8 @@ The script is idempotent and does not overwrite an existing `.env` or database. 
 - creates the unprivileged `energygrappling` service user,
 - puts the SQLite file in `/var/lib/energygrappling/app.db` — outside the code tree, so
   `git pull` and redeploys can never clobber it,
-- writes `server/.env` with `ENVIRONMENT=production`, a **random** `JWT_SECRET`, and the
-  production `CORS_ORIGINS`,
+- writes `server/.env` with `ENVIRONMENT=production` (which is what makes the fixed CORS
+  list in `main.py` drop its localhost entries) and a **random** `JWT_SECRET`,
 - installs and starts the `energygrappling-api` systemd unit, listening on `127.0.0.1:8000`,
 - checks `/api/health` before reporting success.
 
@@ -251,7 +251,7 @@ ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
 5. DevTools → Network → WS: the socket is `101 Switching Protocols`, not repeatedly
    reconnecting.
 6. DevTools → Console: no CORS errors. Check `https://www.energygrappling.com` too — the
-   www origin is the one people forget in `CORS_ORIGINS`.
+   www origin is the one people forget in `ALLOWED_ORIGINS`.
 
 ### When something fails
 
@@ -259,7 +259,7 @@ ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
 | -------------------------------------------- | ------------------------------------------------------------------ |
 | `health endpoint` FAIL, connection refused    | `systemctl status energygrappling-api`, then `journalctl -u …`      |
 | health OK from the container, not from public | tunnel/DNS: `systemctl status cloudflared`, Cloudflare DNS tab      |
-| CORS check FAIL                               | `PRODUCTION_CORS_ORIGINS` in `server/app/config.py`, then redeploy  |
+| CORS check FAIL                               | `ALLOWED_ORIGINS` at the top of `server/main.py`, then redeploy     |
 | Site loads, every API call fails in browser   | bundle built with the wrong `VITE_API_URL` — rebuild and redeploy   |
 | Chat reconnects in a loop                     | expired token (log out and back in) or the tunnel dropping the WS   |
 | 404 on refreshing `/chat`                     | `not_found_handling` in `client/wrangler.jsonc`                     |
@@ -268,8 +268,8 @@ ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
 
 ## Operational notes
 
-- **CORS in production is pinned in code**, in `PRODUCTION_CORS_ORIGINS`
-  (`server/app/config.py`). `CORS_ORIGINS` is ignored when `ENVIRONMENT=production`, so a
+- **CORS is pinned in code**, in `ALLOWED_ORIGINS` at the top of
+  `server/main.py`. There is no environment variable for it, so a
   mistaken `.env` edit on the server cannot expose logged-in users' tokens to another site.
   Adding a domain means editing that list and redeploying. Matching is exact — scheme +
   host, no trailing slash, no wildcards — so `www` needs its own entry.

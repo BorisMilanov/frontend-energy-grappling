@@ -51,6 +51,6 @@ Two caveats worth knowing:
 ## Notes
 
 - Tables are created on boot (`Base.metadata.create_all`). Add Alembic if the schema starts moving.
-- `CORS_ORIGINS` must list the Vite dev origin (`http://localhost:5173`) or the browser blocks calls.
+- Allowed browser origins are fixed in code: `ALLOWED_ORIGINS` at the top of `main.py`.
 - The frontend stores the token in `localStorage` (`eg_token`), which is readable by any XSS on the
   page. For production, move to an httpOnly cookie plus a refresh token.

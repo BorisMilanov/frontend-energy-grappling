@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router';
 
 import AuthCard from './AuthCard';
 import { authApi, setSession, type RegisterPayload } from '../services/authApi';
+import { ROUTES } from '../routes';
 
 interface RegisterFormValues extends RegisterPayload {
   confirm: string;
@@ -25,7 +26,7 @@ const RegisterPage: React.FC = () => {
         password: values.password,
       });
       setSession(data);
-      navigate('/chat', { replace: true });
+      navigate(ROUTES.chat, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Грешка при регистрация.');
     } finally {
@@ -98,7 +99,7 @@ const RegisterPage: React.FC = () => {
       </Form>
 
       <div style={{ textAlign: 'center' }}>
-        Вече имаш профил? <Link to="/api/auth/login">Вход</Link>
+        Вече имаш профил? <Link to={ROUTES.login}>Вход</Link>
       </div>
     </AuthCard>
   );

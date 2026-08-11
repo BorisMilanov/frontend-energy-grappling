@@ -3,6 +3,7 @@ import { Spin } from 'antd';
 import { Navigate, useLocation } from 'react-router';
 
 import { authApi, clearSession, getToken } from '../services/authApi';
+import { ROUTES } from '../routes';
 
 type Status = 'checking' | 'authenticated' | 'anonymous';
 
@@ -38,7 +39,7 @@ const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   if (status === 'anonymous') {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    return <Navigate to={ROUTES.login} replace state={{ from: location.pathname }} />;
   }
 
   return <>{children}</>;

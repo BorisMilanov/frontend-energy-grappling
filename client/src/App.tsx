@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ChatPage from './pages/ChatPage';
 import RequireAuth from './components/RequireAuth';
+import { ROUTES } from './routes';
 
 const Price: React.FC = () => <h2 style={{ padding: 40 }}>Pricing Table</h2>;
 const About: React.FC = () => <h2 style={{ padding: 40 }}>About the Team</h2>;
@@ -17,18 +18,18 @@ function App(): React.JSX.Element {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<BJJHomePage />} />
-        <Route path="/graphic" element={<ScheduleTable />} />
-        <Route path="/price" element={<Price />} />
-        <Route path="/about" element={<About />} />
- 
-        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path={ROUTES.home} element={<BJJHomePage />} />
+        <Route path={ROUTES.schedule} element={<ScheduleTable />} />
+        <Route path={ROUTES.price} element={<Price />} />
+        <Route path={ROUTES.about} element={<About />} />
 
-        <Route path="/api/auth/login" element={<LoginPage />} />
-        <Route path="/api/auth/register" element={<RegisterPage />} />
+        <Route path={ROUTES.calendar} element={<CalendarPage />} />
+
+        <Route path={ROUTES.login} element={<LoginPage />} />
+        <Route path={ROUTES.register} element={<RegisterPage />} />
 
         <Route
-          path="/chat"
+          path={ROUTES.chat}
           element={
             <RequireAuth>
               <ChatPage />

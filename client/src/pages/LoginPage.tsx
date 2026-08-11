@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router';
 
 import AuthCard from './AuthCard';
 import { authApi, setSession, type LoginPayload } from '../services/authApi';
+import { ROUTES } from '../routes';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Where RequireAuth bounced us from, if anywhere.
-  const from = (location.state as { from?: string } | null)?.from ?? '/chat';
+  const from = (location.state as { from?: string } | null)?.from ?? ROUTES.chat;
 
   const onFinish = async (values: LoginPayload): Promise<void> => {
     setLoading(true);
@@ -65,7 +66,7 @@ const LoginPage: React.FC = () => {
       </Form>
 
       <div style={{ textAlign: 'center' }}>
-        Нямаш профил? <Link to="/api/auth/register">Регистрация</Link>
+        Нямаш профил? <Link to={ROUTES.register}>Регистрация</Link>
       </div>
     </AuthCard>
   );
