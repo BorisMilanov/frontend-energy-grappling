@@ -65,8 +65,8 @@ const BJJHomePage: React.FC = () => {
           { key: 'logout', label: 'Изход', icon: <LogoutOutlined /> },
         ]
       : [
-          { key: '/login', label: 'Вход', icon: <LoginOutlined /> },
-          { key: '/register', label: 'Регистрация', icon: <UserAddOutlined /> },
+          { key: '/api/auth/login', label: 'Вход', icon: <LoginOutlined /> },
+          { key: '/api/auth/register', label: 'Регистрация', icon: <UserAddOutlined /> },
         ]),
   ];
 
@@ -75,7 +75,7 @@ const BJJHomePage: React.FC = () => {
     if (e.key === 'calendar-link') navigate('/calendar');
     else if (e.key === 'logout') {
       clearSession();
-      navigate('/login');
+      navigate('/api/auth/login');
     } else if (e.key.startsWith('/')) navigate(e.key);
     else scrollTo(e.key);
   };

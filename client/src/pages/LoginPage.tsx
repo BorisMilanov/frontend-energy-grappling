@@ -65,7 +65,7 @@ const LoginPage: React.FC = () => {
       </Form>
 
       <div style={{ textAlign: 'center' }}>
-        Нямаш профил? <Link to="/register">Регистрация</Link>
+        Нямаш профил? <Link to="/api/auth/register">Регистрация</Link>
       </div>
     </AuthCard>
   );
