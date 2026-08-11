@@ -12,11 +12,19 @@ fi
 
 git -C "$APP_DIR" pull --ff-only
 "$APP_DIR/venv/bin/pip" install --quiet -r "$APP_DIR/server/requirements.txt"
+
+# Pick up unit-file changes that came with the pull.
+install -m 644 "$APP_DIR/server/deploy/energygrappling-api.service" /etc/systemd/system/
+systemctl daemon-reload
 systemctl restart energygrappling-api
 
-sleep 2
-systemctl is-active --quiet energygrappling-api || {
-	journalctl -u energygrappling-api -n 30 --no-pager >&2
-	exit 1
-}
-curl -fsS http://127.0.0.1:8000/api/health && echo
+for _ in {1..15}; do
+	if curl -fsS --max-time 2 http://127.0.0.1:8000/api/health; then
+		echo
+		exit 0
+	fi
+	sleep 1
+done
+
+journalctl -u energygrappling-api -n 40 --no-pager >&2
+exit 1

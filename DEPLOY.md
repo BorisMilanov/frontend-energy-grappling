@@ -87,6 +87,47 @@ sudo systemctl enable --now cloudflared
 
 `tunnel route dns` creates the proxied `api` record for you — nothing to add by hand.
 
+#### "cloudflared service is already installed"
+
+Not a failure — the service exists, so `service install` is simply unnecessary. Which mode
+it runs in decides where you configure the hostname:
+
+```bash
+systemctl cat cloudflared | grep ExecStart
+```
+
+- **`... tunnel run --token eyJ…`** — a *remotely managed* tunnel. `/etc/cloudflared/config.yml`
+  is **ignored**; the ingress lives in the dashboard. Add it at Cloudflare **Zero Trust →
+  Networks → Tunnels →** your tunnel **→ Public Hostnames → Add**: subdomain `api`, domain
+  `energygrappling.com`, service `HTTP` → `127.0.0.1:8000`. That also creates the DNS record.
+  Nothing to do on the box.
+
+- **`... --config /etc/cloudflared/config.yml tunnel run`** — a *locally managed* tunnel.
+  Edit that file (the repo copy is the template), then:
+
+  ```bash
+  cloudflared tunnel ingress validate                          # syntax + rule order
+  cloudflared tunnel ingress rule https://api.energygrappling.com  # shows the matching rule
+  sudo systemctl restart cloudflared
+  ```
+
+To start over instead — only if the existing tunnel is a leftover you do not want:
+
+```bash
+sudo systemctl stop cloudflared
+sudo cloudflared service uninstall
+sudo cloudflared service install        # or: ... install <TOKEN>
+sudo systemctl enable --now cloudflared
+```
+
+Either way, confirm the path end to end:
+
+```bash
+curl -fsS http://127.0.0.1:8000/api/health        # the API itself
+journalctl -u cloudflared -n 30 --no-pager        # expect "Registered tunnel connection"
+curl -fsS https://api.energygrappling.com/api/health
+```
+
 **Option B — Caddy with a real certificate.** Only if you want the container reachable
 directly. Forward ports 80 and 443 to it on your router, and set the `api` DNS record to
 **DNS only** (grey cloud) so Let's Encrypt can validate.
@@ -144,14 +185,84 @@ links like `/chat` work on refresh.
 
 ## 4. Verify
 
+### Before deploying (on your machine)
+
 ```bash
-curl https://api.energygrappling.com/api/health          # {"status":"ok"}
-curl -i https://energygrappling.com                      # 200, HTML
+cd client && npx tsc -b && npx eslint src && npm run build
 ```
 
-Then in a browser: register at `https://energygrappling.com/register`, open the chat, and
-open it a second time in another browser to confirm messages and the online count move
-between them.
+All three must be silent/zero-exit. Then confirm the built bundle points at the right API —
+this is the single most common deploy mistake:
+
+```bash
+grep -o "https://api.energygrappling.com" client/dist/assets/*.js | head -1
+```
+
+### After deploying (one command)
+
+[server/deploy/smoke.py](server/deploy/smoke.py) checks the whole stack — health, CORS from
+the production origin, register/login/wrong-password/me, chat history auth, and a real
+two-client WebSocket round trip. Exit code 0 means everything passed.
+
+```bash
+# in the container, against the local service
+/opt/energygrappling/venv/bin/python /opt/energygrappling/server/deploy/smoke.py
+
+# from anywhere, against the public hostname (this is the one that matters —
+# it exercises Cloudflare, TLS and the tunnel too)
+python server/deploy/smoke.py https://api.energygrappling.com
+```
+
+Expected output:
+
+```
+[PASS] health endpoint - {'status': 'ok'}
+[PASS] CORS allows https://energygrappling.com - got 'https://energygrappling.com'
+[PASS] register user a / b
+[PASS] login with the right password - 200
+[PASS] login with a wrong password is refused - 401
+[PASS] token identifies the user
+[PASS] chat history needs auth - 401
+[PASS] chat history with auth - 200
+[PASS] chat: bad token is rejected
+[PASS] chat: message reaches the other client
+All checks passed.
+```
+
+Each run creates two throwaway `smoke+…@example.com` users; the docstring in the script has
+the SQL to delete them.
+
+### Service health in the container
+
+```bash
+systemctl status energygrappling-api          # active (running)
+journalctl -u energygrappling-api -n 50       # no tracebacks at boot
+systemctl status cloudflared                  # if using the tunnel
+ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
+```
+
+### In a browser (the part no script covers)
+
+1. `https://energygrappling.com` loads and the nav shows **Вход / Регистрация**.
+2. Register — you land on `/chat` and the nav switches to **Чат / Изход**.
+3. Reload `/chat` directly: it must stay on the chat, not 404 (proves SPA routing).
+4. Open it in a second browser, log in as another user: messages appear on both sides
+   within a second and the online counter goes to 2.
+5. DevTools → Network → WS: the socket is `101 Switching Protocols`, not repeatedly
+   reconnecting.
+6. DevTools → Console: no CORS errors. Check `https://www.energygrappling.com` too — the
+   www origin is the one people forget in `CORS_ORIGINS`.
+
+### When something fails
+
+| Symptom                                      | Look at                                                            |
+| -------------------------------------------- | ------------------------------------------------------------------ |
+| `health endpoint` FAIL, connection refused    | `systemctl status energygrappling-api`, then `journalctl -u …`      |
+| health OK from the container, not from public | tunnel/DNS: `systemctl status cloudflared`, Cloudflare DNS tab      |
+| CORS check FAIL                               | `CORS_ORIGINS` in `server/.env`, then restart the service           |
+| Site loads, every API call fails in browser   | bundle built with the wrong `VITE_API_URL` — rebuild and redeploy   |
+| Chat reconnects in a loop                     | expired token (log out and back in) or the tunnel dropping the WS   |
+| 404 on refreshing `/chat`                     | `not_found_handling` in `client/wrangler.jsonc`                     |
 
 ---
 

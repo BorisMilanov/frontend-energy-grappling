@@ -12,6 +12,7 @@ SERVER_DIR="$APP_DIR/server"
 VENV_DIR="$APP_DIR/venv"
 DATA_DIR=/var/lib/energygrappling
 APP_USER=energygrappling
+SERVICE=energygrappling-api
 
 if [[ $EUID -ne 0 ]]; then
 	echo "Run with sudo." >&2
@@ -24,8 +25,17 @@ if [[ ! -f "$SERVER_DIR/main.py" ]]; then
 fi
 
 echo "==> Packages"
+export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y -qq python3 python3-venv python3-pip
+# curl is used by the health check below and by the cloudflared install; a minimal LXC
+# template does not ship it. sqlite3 is for backups, git for deploy/update.sh.
+apt-get install -y -qq python3 python3-venv python3-pip curl ca-certificates git sqlite3
+
+# The codebase uses PEP 604 unions (`User | None`), so 3.10 is the floor.
+python3 - <<'PY' || { echo "Python 3.10+ required." >&2; exit 1; }
+import sys
+sys.exit(0 if sys.version_info >= (3, 10) else 1)
+PY
 
 echo "==> Service user and data dir"
 id -u "$APP_USER" &>/dev/null || useradd --system --no-create-home --shell /usr/sbin/nologin "$APP_USER"
@@ -39,6 +49,7 @@ echo "==> Virtualenv"
 if [[ ! -f "$SERVER_DIR/.env" ]]; then
 	echo "==> Generating .env with a random JWT secret"
 	secret=$("$VENV_DIR/bin/python" -c "import secrets; print(secrets.token_urlsafe(48))")
+	# token_urlsafe emits only [A-Za-z0-9_-], so it is safe unquoted in an EnvironmentFile.
 	cat >"$SERVER_DIR/.env" <<EOF
 ENVIRONMENT=production
 JWT_SECRET=$secret
@@ -55,16 +66,27 @@ chown root:"$APP_USER" "$SERVER_DIR/.env"
 chmod 640 "$SERVER_DIR/.env"
 
 echo "==> systemd unit"
-install -m 644 "$SERVER_DIR/deploy/energygrappling-api.service" /etc/systemd/system/
+install -m 644 "$SERVER_DIR/deploy/$SERVICE.service" /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable --now energygrappling-api
+systemctl enable --quiet "$SERVICE"
+# restart, not `enable --now`: on a re-run the service is already active and would keep
+# running the old unit file and the old code.
+systemctl restart "$SERVICE"
 
-sleep 2
-systemctl is-active --quiet energygrappling-api && echo "==> Service is running" || {
-	echo "Service failed to start. Logs:" >&2
-	journalctl -u energygrappling-api -n 30 --no-pager >&2
-	exit 1
-}
+echo "==> Waiting for the API to answer"
+for attempt in {1..15}; do
+	if curl -fsS --max-time 2 http://127.0.0.1:8000/api/health >/dev/null 2>&1; then
+		echo "==> Healthy: $(curl -fsS http://127.0.0.1:8000/api/health)"
+		echo "==> Done. Expose it with Cloudflare Tunnel or Caddy (see server/deploy/)."
+		exit 0
+	fi
+	# A crash loop keeps the unit in "activating", so check the state as well as the port.
+	if [[ "$(systemctl is-failed "$SERVICE" || true)" == "failed" ]]; then
+		break
+	fi
+	sleep 1
+done
 
-curl -fsS http://127.0.0.1:8000/api/health && echo
-echo "==> Done. Expose it with Cloudflare Tunnel or Caddy (see server/deploy/)."
+echo "Service did not become healthy. Recent logs:" >&2
+journalctl -u "$SERVICE" -n 40 --no-pager >&2
+exit 1

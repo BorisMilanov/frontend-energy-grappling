@@ -10,6 +10,11 @@ Group=energygrappling
 WorkingDirectory=/opt/energygrappling/server
 EnvironmentFile=/opt/energygrappling/server/.env
 
+# Unbuffered so logs reach journald immediately; no .pyc writes because the code tree is
+# read-only for this service (ProtectSystem=strict below).
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+
 # --proxy-headers + --forwarded-allow-ips make uvicorn trust X-Forwarded-* from the
 # local reverse proxy only, so client IPs and https:// URLs are correct behind Caddy.
 ExecStart=/opt/energygrappling/venv/bin/uvicorn main:app \

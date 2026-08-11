@@ -2,6 +2,21 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_DEV_SECRET = "dev-secret-change-me"
 
+# Fallback used when CORS_ORIGINS is not set in the environment / .env.
+# Exact matches only: scheme + host + port, no trailing slash, no wildcards.
+DEFAULT_CORS_ORIGINS = ",".join(
+    [
+        "https://energygrappling.com",
+        "https://www.energygrappling.com",
+        "http://localhost:3000",  # vite dev server
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",  # vite's own default, if the port is ever changed back
+        "http://127.0.0.1:5173",
+        "http://localhost:8000",  # the API's own origin (Swagger UI at /docs)
+        "http://127.0.0.1:8000",
+    ]
+)
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -11,7 +26,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     database_url: str = "sqlite:///./app.db"
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    cors_origins: str = DEFAULT_CORS_ORIGINS
 
     @property
     def is_production(self) -> bool:
