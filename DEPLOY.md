@@ -259,7 +259,7 @@ ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
 | -------------------------------------------- | ------------------------------------------------------------------ |
 | `health endpoint` FAIL, connection refused    | `systemctl status energygrappling-api`, then `journalctl -u …`      |
 | health OK from the container, not from public | tunnel/DNS: `systemctl status cloudflared`, Cloudflare DNS tab      |
-| CORS check FAIL                               | `CORS_ORIGINS` in `server/.env`, then restart the service           |
+| CORS check FAIL                               | `PRODUCTION_CORS_ORIGINS` in `server/app/config.py`, then redeploy  |
 | Site loads, every API call fails in browser   | bundle built with the wrong `VITE_API_URL` — rebuild and redeploy   |
 | Chat reconnects in a loop                     | expired token (log out and back in) or the tunnel dropping the WS   |
 | 404 on refreshing `/chat`                     | `not_found_handling` in `client/wrangler.jsonc`                     |
@@ -268,9 +268,11 @@ ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
 
 ## Operational notes
 
-- **CORS is exact-match.** `CORS_ORIGINS` in `server/.env` must list the scheme and host
-  with no trailing slash. Miss `https://www.energygrappling.com` and the www visitors get
-  blocked in the browser while everything looks fine in `curl`.
+- **CORS in production is pinned in code**, in `PRODUCTION_CORS_ORIGINS`
+  (`server/app/config.py`). `CORS_ORIGINS` is ignored when `ENVIRONMENT=production`, so a
+  mistaken `.env` edit on the server cannot expose logged-in users' tokens to another site.
+  Adding a domain means editing that list and redeploying. Matching is exact — scheme +
+  host, no trailing slash, no wildcards — so `www` needs its own entry.
 - **The API refuses to boot in production with the default `JWT_SECRET`** — deliberate, so a
   repo-visible key can never sign real tokens. Rotating the secret logs everyone out.
 - **Restart both after a domain change**: the SPA needs a rebuild (baked-in URL), the API

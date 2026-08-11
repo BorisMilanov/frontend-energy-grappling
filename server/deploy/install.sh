@@ -56,7 +56,8 @@ JWT_SECRET=$secret
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 DATABASE_URL=sqlite:////var/lib/energygrappling/app.db
-CORS_ORIGINS=https://energygrappling.com,https://www.energygrappling.com
+# CORS_ORIGINS is deliberately absent: in production the allowed origins are pinned in
+# app/config.py (PRODUCTION_CORS_ORIGINS) and cannot be widened from here.
 EOF
 else
 	echo "==> Keeping existing .env"

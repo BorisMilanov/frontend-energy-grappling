@@ -21,7 +21,13 @@
       "Bash(rm -rf ../client/dist)",
       "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | Select-Object ProcessId,@{n='cmd';e={$_.CommandLine}} | Format-List)",
       "Bash(.venv/Scripts/python.exe -c ' *)",
-      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://127.0.0.1:8000/api/auth/login -H \"Origin: http://localhost:3000\" -H \"Access-Control-Request-Method: POST\" -H \"Access-Control-Request-Headers: content-type\")"
+      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://127.0.0.1:8000/api/auth/login -H \"Origin: http://localhost:3000\" -H \"Access-Control-Request-Method: POST\" -H \"Access-Control-Request-Headers: content-type\")",
+      "Bash(.venv/Scripts/python.exe -c \"from app.config import settings; print\\(settings.cors_origin_list\\)\")",
+      "Bash(ENVIRONMENT=production JWT_SECRET=x-real-secret-value-for-test CORS_ORIGINS='https://evil.example.com,*' .venv/Scripts/python.exe -c \"from app.config import settings; print\\(settings.cors_origin_list\\)\")",
+      "Bash(ENVIRONMENT=production JWT_SECRET=test-secret-not-the-default-value CORS_ORIGINS=https://evil.example.com DATABASE_URL=sqlite:///./prodcheck.db .venv/Scripts/python.exe -m uvicorn main:app --port 8012)",
+      "Bash(PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe deploy/smoke.py http://127.0.0.1:8012)",
+      "Bash(echo \"SMOKE_EXIT:$?\")",
+      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://127.0.0.1:8012/api/auth/login -H \"Origin: https://evil.example.com\" -H \"Access-Control-Request-Method: POST\")"
     ]
   }
 }

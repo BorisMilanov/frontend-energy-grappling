@@ -104,7 +104,8 @@ def main() -> int:
     print(f"Checking {base}\n")
 
     status, _, body = request("GET", f"{base}/api/health")
-    if not check("health endpoint", status == 200 and body == {"status": "ok"}, str(body)):
+    healthy = status == 200 and isinstance(body, dict) and body.get("status") == "ok"
+    if not check("health endpoint", healthy, str(body)):
         print("\nThe API is not answering; nothing else can be checked.")
         return 1
 

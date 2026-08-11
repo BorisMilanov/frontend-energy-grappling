@@ -2,12 +2,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_DEV_SECRET = "dev-secret-change-me"
 
-# Fallback used when CORS_ORIGINS is not set in the environment / .env.
-# Exact matches only: scheme + host + port, no trailing slash, no wildcards.
+# Origins allowed in production. Fixed in code on purpose: CORS is the only thing standing
+# between a hostile page and a logged-in user's token, so it must not be widenable by an
+# environment variable or a stray .env edit on the server. To add a domain, change this list
+# and redeploy. Exact matches: scheme + host (+ port), no trailing slash, no wildcards.
+PRODUCTION_CORS_ORIGINS = [
+    "https://energygrappling.com",
+    "https://www.energygrappling.com",
+]
+
+# Development only. Overridable via CORS_ORIGINS.
 DEFAULT_CORS_ORIGINS = ",".join(
     [
-        "https://energygrappling.com",
-        "https://www.energygrappling.com",
+        *PRODUCTION_CORS_ORIGINS,
         "http://localhost:3000",  # vite dev server
         "http://127.0.0.1:3000",
         "http://localhost:5173",  # vite's own default, if the port is ever changed back
@@ -34,6 +41,9 @@ class Settings(BaseSettings):
 
     @property
     def cors_origin_list(self) -> list[str]:
+        if self.is_production:
+            # Pinned; CORS_ORIGINS is ignored here by design.
+            return PRODUCTION_CORS_ORIGINS
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
