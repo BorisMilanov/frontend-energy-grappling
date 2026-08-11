@@ -8,9 +8,7 @@ const { useBreakpoint } = Grid;
 import type { ColumnsType } from 'antd/es/table';
 import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import {
-  MenuOutlined, CloseOutlined, LoginOutlined, UserAddOutlined, LogoutOutlined,
-} from '@ant-design/icons';
+import { MenuOutlined, CloseOutlined, LogoutOutlined } from '@ant-design/icons';
 import herohomeImage from '../assets/team.jpg';
 import { clearSession, getUser } from '../services/authApi';
 import { ROUTES } from '../routes';
@@ -53,18 +51,14 @@ const BJJHomePage: React.FC = () => {
   // Re-read on every render so the bar flips right after login / logout.
   const currentUser = getUser();
 
+  // No Вход / Регистрация entries: the auth pages stay reachable by URL only.
   const publicNavItems = [
     { key: 'hero', label: 'Начало' },
     { key: 'schedule', label: 'График' },
     { key: 'trainer', label: 'Треньорите' },
     { key: 'contact', label: 'Контакти' },
     { key: 'calendar-link', label: 'Календар' },
-    ...(currentUser
-      ? [{ key: 'logout', label: 'Изход', icon: <LogoutOutlined /> }]
-      : [
-          { key: ROUTES.login, label: 'Вход', icon: <LoginOutlined /> },
-          { key: ROUTES.register, label: 'Регистрация', icon: <UserAddOutlined /> },
-        ]),
+    ...(currentUser ? [{ key: 'logout', label: 'Изход', icon: <LogoutOutlined /> }] : []),
   ];
 
 
