@@ -14,7 +14,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Where RequireAuth bounced us from, if anywhere.
-  const from = (location.state as { from?: string } | null)?.from ?? ROUTES.chat;
+  const from = (location.state as { from?: string } | null)?.from ?? ROUTES.home;
 
   const onFinish = async (values: LoginPayload): Promise<void> => {
     setLoading(true);

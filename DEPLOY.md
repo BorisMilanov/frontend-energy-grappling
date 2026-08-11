@@ -5,7 +5,7 @@ Two halves, deployed independently:
 | Part                        | Runs on                              | Public hostname                                     |
 | --------------------------- | ------------------------------------ | --------------------------------------------------- |
 | `client/` — React SPA       | Cloudflare Workers (static assets)   | `energygrappling.com`, `www.energygrappling.com`     |
-| `server/` — FastAPI + chat  | Ubuntu LXC on Proxmox                | `api.energygrappling.com`                            |
+| `server/` — Express API     | Ubuntu LXC on Proxmox                | `api.energygrappling.com`                            |
 
 The frontend calls the API by absolute URL (`VITE_API_URL`), so the two never need to
 share a host.
@@ -45,12 +45,12 @@ sudo bash /opt/energygrappling/server/deploy/install.sh
 
 The script is idempotent and does not overwrite an existing `.env` or database. It:
 
-- installs Python and creates `/opt/energygrappling/venv`,
+- installs Node (NodeSource, v24+ — `node:sqlite` needs it) and runs `npm ci --omit=dev`,
 - creates the unprivileged `energygrappling` service user,
 - puts the SQLite file in `/var/lib/energygrappling/app.db` — outside the code tree, so
   `git pull` and redeploys can never clobber it,
-- writes `server/.env` with `ENVIRONMENT=production` (which is what makes the fixed CORS
-  list in `main.py` drop its localhost entries) and a **random** `JWT_SECRET`,
+- writes `server/.env` with `NODE_ENV=production` (which is what makes the fixed CORS
+  list in `src/config.js` drop its localhost entries) and a **random** `JWT_SECRET`,
 - installs and starts the `energygrappling-api` systemd unit, listening on `127.0.0.1:8000`,
 - checks `/api/health` before reporting success.
 
@@ -179,7 +179,7 @@ rebuild, and only public values belong there.
 
 [client/wrangler.jsonc](client/wrangler.jsonc) names the Worker `energygrappling` and
 attaches both hostnames. `not_found_handling: single-page-application` is what makes deep
-links like `/chat` work on refresh.
+links like `/login` work on refresh.
 
 ---
 
@@ -200,43 +200,46 @@ grep -o "https://api.energygrappling.com" client/dist/assets/*.js | head -1
 
 ### After deploying (one command)
 
-[server/deploy/smoke.py](server/deploy/smoke.py) checks the whole stack — health, CORS from
-the production origin, register/login/wrong-password/me, chat history auth, and a real
-two-client WebSocket round trip. Exit code 0 means everything passed.
+[server/test/smoke.js](server/test/smoke.js) checks the whole stack — health, CORS from the
+production origin (and refusal of an unknown one), register, duplicate email, weak password,
+login right/wrong/unknown, and `/me` with a good, missing and bad token. Exit code 0 means
+everything passed.
 
 ```bash
 # in the container, against the local service
-/opt/energygrappling/venv/bin/python /opt/energygrappling/server/deploy/smoke.py
+node /opt/energygrappling/server/test/smoke.js
 
 # from anywhere, against the public hostname (this is the one that matters —
 # it exercises Cloudflare, TLS and the tunnel too)
-python server/deploy/smoke.py https://api.energygrappling.com
+node server/test/smoke.js https://api.energygrappling.com
 ```
 
 Expected output:
 
 ```
-[PASS] health endpoint - {'status': 'ok'}
-[PASS] CORS allows https://energygrappling.com - got 'https://energygrappling.com'
-[PASS] register user a / b
+[PASS] health endpoint
+[PASS] CORS allows https://energygrappling.com
+[PASS] CORS refuses an unknown origin
+[PASS] register
+[PASS] duplicate email is refused (case-insensitively) - 409
+[PASS] short password is refused - 422
 [PASS] login with the right password - 200
 [PASS] login with a wrong password is refused - 401
+[PASS] login for an unknown email is refused - 401
 [PASS] token identifies the user
-[PASS] chat history needs auth - 401
-[PASS] chat history with auth - 200
-[PASS] chat: bad token is rejected
-[PASS] chat: message reaches the other client
+[PASS] /me without a token is refused - 401
+[PASS] /me with a bad token is refused - 401
 All checks passed.
 ```
 
-Each run creates two throwaway `smoke+…@example.com` users; the docstring in the script has
-the SQL to delete them.
+Each run creates one throwaway `smoke+…@example.com` user; the comment at the top of the
+script has the SQL to delete them.
 
 ### Service health in the container
 
 ```bash
 systemctl status energygrappling-api          # active (running)
-journalctl -u energygrappling-api -n 50       # no tracebacks at boot
+journalctl -u energygrappling-api -n 50       # no stack traces at boot
 systemctl status cloudflared                  # if using the tunnel
 ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
 ```
@@ -244,12 +247,11 @@ ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
 ### In a browser (the part no script covers)
 
 1. `https://energygrappling.com` loads and the nav shows **Вход / Регистрация**.
-2. Register — you land on `/chat` and the nav switches to **Чат / Изход**.
-3. Reload `/chat` directly: it must stay on the chat, not 404 (proves SPA routing).
-4. Open it in a second browser, log in as another user: messages appear on both sides
-   within a second and the online counter goes to 2.
-5. DevTools → Network → WS: the socket is `101 Switching Protocols`, not repeatedly
-   reconnecting.
+2. Register — you land back on the home page and the nav switches to **Изход**.
+3. Reload `/login` directly: it must render the form, not 404 (proves SPA routing).
+4. Log out, then log in again with the same credentials.
+5. DevTools → Application → Local Storage: `eg_token` and `eg_user` appear on login and
+   disappear on logout.
 6. DevTools → Console: no CORS errors. Check `https://www.energygrappling.com` too — the
    www origin is the one people forget in `ALLOWED_ORIGINS`.
 
@@ -259,17 +261,17 @@ ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
 | -------------------------------------------- | ------------------------------------------------------------------ |
 | `health endpoint` FAIL, connection refused    | `systemctl status energygrappling-api`, then `journalctl -u …`      |
 | health OK from the container, not from public | tunnel/DNS: `systemctl status cloudflared`, Cloudflare DNS tab      |
-| CORS check FAIL                               | `ALLOWED_ORIGINS` at the top of `server/main.py`, then redeploy     |
+| CORS check FAIL                               | `ALLOWED_ORIGINS` in `server/src/config.js`, then redeploy          |
 | Site loads, every API call fails in browser   | bundle built with the wrong `VITE_API_URL` — rebuild and redeploy   |
-| Chat reconnects in a loop                     | expired token (log out and back in) or the tunnel dropping the WS   |
-| 404 on refreshing `/chat`                     | `not_found_handling` in `client/wrangler.jsonc`                     |
+| Login works, then 401s soon after             | `JWT_EXPIRES_IN` is short, or the secret changed (that logs all out) |
+| 404 on refreshing `/login`                    | `not_found_handling` in `client/wrangler.jsonc`                     |
 
 ---
 
 ## Operational notes
 
-- **CORS is pinned in code**, in `ALLOWED_ORIGINS` at the top of
-  `server/main.py`. There is no environment variable for it, so a
+- **CORS is pinned in code**, in `ALLOWED_ORIGINS` in
+  `server/src/config.js`. There is no environment variable for it, so a
   mistaken `.env` edit on the server cannot expose logged-in users' tokens to another site.
   Adding a domain means editing that list and redeploying. Matching is exact — scheme +
   host, no trailing slash, no wildcards — so `www` needs its own entry.
@@ -277,16 +279,18 @@ ls -l /var/lib/energygrappling/app.db         # exists, owned by energygrappling
   repo-visible key can never sign real tokens. Rotating the secret logs everyone out.
 - **Restart both after a domain change**: the SPA needs a rebuild (baked-in URL), the API
   needs `systemctl restart` (env-read at boot).
-- **WebSockets** work through both the Cloudflare proxy and the Tunnel. uvicorn sends
-  protocol-level pings every 20s which keeps intermediaries from dropping idle chats, and
-  the client reconnects on its own 2s after any drop.
-- **One worker only.** The chat's socket registry is in-process; adding `--workers 2` would
-  split the room silently. Scaling out needs Redis pub/sub first.
+- **Passwords** are bcrypt (12 rounds) via `bcryptjs`; login compares against a dummy hash
+  when the email is unknown, so a wrong email and a wrong password take the same time and
+  the endpoint does not leak which addresses are registered.
+- **One process.** SQLite in WAL mode is fine for a single Node process. Do not add a
+  cluster/PM2 fork setup without moving the database somewhere that tolerates concurrent
+  writers.
 - **Backups.** The whole state is one file:
   ```bash
   sqlite3 /var/lib/energygrappling/app.db ".backup /root/app-$(date +%F).db"
   ```
   Proxmox `vzdump` of the container covers it too — plus schedule one, since a container
   snapshot is the fastest way back from a bad deploy.
-- **Schema changes** currently rely on `create_all`, which creates missing tables but never
-  alters existing ones. The first time you change a column, add Alembic.
+- **Schema changes** currently rely on `CREATE TABLE IF NOT EXISTS`, which creates missing
+  tables but never alters existing ones. The first time you change a column, add a real
+  migration step.

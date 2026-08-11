@@ -9,8 +9,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import {
-  MenuOutlined, CloseOutlined, LoginOutlined, UserAddOutlined,
-  LogoutOutlined, MessageOutlined,
+  MenuOutlined, CloseOutlined, LoginOutlined, UserAddOutlined, LogoutOutlined,
 } from '@ant-design/icons';
 import herohomeImage from '../assets/team.jpg';
 import { clearSession, getUser } from '../services/authApi';
@@ -61,10 +60,7 @@ const BJJHomePage: React.FC = () => {
     { key: 'contact', label: 'Контакти' },
     { key: 'calendar-link', label: 'Календар' },
     ...(currentUser
-      ? [
-          { key: ROUTES.chat, label: 'Чат', icon: <MessageOutlined /> },
-          { key: 'logout', label: 'Изход', icon: <LogoutOutlined /> },
-        ]
+      ? [{ key: 'logout', label: 'Изход', icon: <LogoutOutlined /> }]
       : [
           { key: ROUTES.login, label: 'Вход', icon: <LoginOutlined /> },
           { key: ROUTES.register, label: 'Регистрация', icon: <UserAddOutlined /> },

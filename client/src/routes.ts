@@ -8,15 +8,13 @@ export const ROUTES = {
   price: '/price',
   about: '/about',
   calendar: '/calendar',
-  chat: '/chat',
-  login: '/api/auth/login',
-  register: '/api/auth/register',
+  login: '/login',
+  register: '/register',
 } as const;
 
 /** Paths that are real pages, as opposed to home-page sections to scroll to. */
 export const PAGE_PATHS: ReadonlySet<string> = new Set([
   ROUTES.calendar,
-  ROUTES.chat,
   ROUTES.login,
   ROUTES.register,
 ]);

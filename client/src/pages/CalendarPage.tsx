@@ -200,9 +200,9 @@ const CalendarPage: React.FC = () => {
               mode="horizontal"
               selectedKeys={['/calendar']}
               items={[
-                { key: '/calendar', label: 'Календар' },
+                { key: ROUTES.calendar, label: 'Календар' },
                 ...(getUser()
-                  ? [{ key: ROUTES.chat, label: 'Чат' }]
+                  ? []
                   : [
                       { key: ROUTES.login, label: 'Вход' },
                       { key: ROUTES.register, label: 'Регистрация' },

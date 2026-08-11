@@ -33,7 +33,21 @@
       "Bash(rm -f prodcheck.db)",
       "Bash(ENVIRONMENT=production JWT_SECRET=test-secret-not-default DATABASE_URL=sqlite:///./prodcheck.db .venv/Scripts/python.exe -m uvicorn main:app --port 8013)",
       "Bash(PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe deploy/smoke.py http://127.0.0.1:8013)",
-      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://127.0.0.1:8013/api/auth/login -H \"Origin: http://localhost:3000\" -H \"Access-Control-Request-Method: POST\")"
+      "Bash(curl -s -o /dev/null -D - -X OPTIONS http://127.0.0.1:8013/api/auth/login -H \"Origin: http://localhost:3000\" -H \"Access-Control-Request-Method: POST\")",
+      "PowerShell(Set-Location 'D:\\\\WORK'; try { Remove-Item -Recurse -Force 'D:\\\\WORK\\\\frontend-energy-grappling\\\\server' -ErrorAction Stop; 'removed' } catch { 'still locked: ' + $_.Exception.Message.Split\\([Environment]::NewLine\\)[0] }; Test-Path 'D:\\\\WORK\\\\frontend-energy-grappling\\\\server')",
+      "Bash(npm -v)",
+      "Bash(git checkout *)",
+      "Bash(npm install *)",
+      "Bash(echo \"install:$?\")",
+      "Bash(node -e \"const {DatabaseSync}=require\\('node:sqlite'\\); console.log\\('node:sqlite available'\\)\")",
+      "Bash(PORT=8020 DATABASE_FILE=./smoketest.db node src/index.js)",
+      "Bash(node test/smoke.js http://127.0.0.1:8020)",
+      "Bash(curl -s -D - -X POST http://127.0.0.1:8020/api/auth/register -H \"Origin: http://localhost:3000\" -H \"Content-Type: application/json\" -d '{\"email\":\"browser@example.com\",\"full_name\":\"Браузър Тест\",\"password\":\"parola12345\"}')",
+      "Bash(node -e ' *)",
+      "Bash(bash -n deploy/install.sh)",
+      "Bash(bash -n deploy/update.sh)",
+      "Bash(NODE_ENV=production PORT=8021 node src/index.js)",
+      "Bash(NODE_ENV=production JWT_SECRET=real-secret-for-test PORT=8021 DATABASE_FILE=./prodcheck.db node -e ' *)"
     ]
   }
 }

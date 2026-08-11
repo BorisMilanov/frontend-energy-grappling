@@ -1,0 +1,22 @@
+{
+  "name": "energygrappling-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Express + JWT + SQLite API for energygrappling.com",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/index.js",
+    "start": "node src/index.js",
+    "smoke": "node test/smoke.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.6",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

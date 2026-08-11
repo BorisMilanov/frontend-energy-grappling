@@ -1,12 +1,13 @@
 # Energy Grappling
 
 ```
-client/   React + TypeScript + Vite frontend  (npm run dev  -> http://localhost:5173)
-server/   FastAPI + JWT backend               (uvicorn main:app --reload --port 8000)
+client/   React + TypeScript + Vite frontend  (npm run dev -> http://localhost:3000)
+server/   Express + JWT + SQLite API          (npm run dev -> http://127.0.0.1:8000)
 ```
 
-Every npm command runs from `client/`; see [server/README.md](server/README.md) for the API
-and [DEPLOY.md](DEPLOY.md) for putting it on energygrappling.com (Cloudflare + Proxmox LXC).
+Each half has its own `package.json` — there is none at the repo root. See
+[server/README.md](server/README.md) for the API and [DEPLOY.md](DEPLOY.md) for putting it on
+energygrappling.com (Cloudflare Workers + Proxmox LXC).
 
 ## React + TypeScript + Vite
 

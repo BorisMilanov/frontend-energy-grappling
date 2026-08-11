@@ -26,7 +26,7 @@ const RegisterPage: React.FC = () => {
         password: values.password,
       });
       setSession(data);
-      navigate(ROUTES.chat, { replace: true });
+      navigate(ROUTES.home, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Грешка при регистрация.');
     } finally {

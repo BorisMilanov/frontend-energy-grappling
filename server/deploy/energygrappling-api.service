@@ -1,25 +1,16 @@
 [Unit]
-Description=Energy Grappling API (FastAPI)
+Description=Energy Grappling API (Express)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-Type=exec
+Type=simple
 User=energygrappling
 Group=energygrappling
 WorkingDirectory=/opt/energygrappling/server
 EnvironmentFile=/opt/energygrappling/server/.env
 
-# Unbuffered so logs reach journald immediately; no .pyc writes because the code tree is
-# read-only for this service (ProtectSystem=strict below).
-Environment=PYTHONUNBUFFERED=1
-Environment=PYTHONDONTWRITEBYTECODE=1
-
-# --proxy-headers + --forwarded-allow-ips make uvicorn trust X-Forwarded-* from the
-# local reverse proxy only, so client IPs and https:// URLs are correct behind Caddy.
-ExecStart=/opt/energygrappling/venv/bin/uvicorn main:app \
-    --host 127.0.0.1 --port 8000 \
-    --proxy-headers --forwarded-allow-ips 127.0.0.1
+ExecStart=/usr/bin/node src/index.js
 
 Restart=always
 RestartSec=3

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
-import { MenuOutlined, CloseOutlined, LoginOutlined, UserAddOutlined, LogoutOutlined } from '@ant-design/icons';
+import {
+  MenuOutlined, CloseOutlined, LoginOutlined, UserAddOutlined, LogoutOutlined,
+} from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -34,7 +36,6 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ scrollToSection }) => {
   const menuItems: MenuProps['items'] = user
     ? [
         ...baseItems,
-        { key: ROUTES.chat, label: 'Чат' },
         { key: LOGOUT_KEY, label: `Изход (${user.full_name})`, icon: <LogoutOutlined /> },
       ]
     : [
