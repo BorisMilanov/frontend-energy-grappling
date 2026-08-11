@@ -19,11 +19,15 @@ app = FastAPI(
 # environment variables; in development it follows CORS_ORIGINS / the dev defaults.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origin_list,
-    allow_credentials=True,   # send the Authorization header
-    allow_methods=["*"],
-    allow_headers=["*"],
-    max_age=3600,             # cache preflights for an hour
+    allow_origins=[
+        "https://energygrappling.com",      # ← Add your domain
+        "https://www.energygrappling.com",
+        "http://localhost:3000",             # Dev
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Content-Type", "Authorization"],
+    max_age=86400,
 )
 
 app.include_router(auth.router)
