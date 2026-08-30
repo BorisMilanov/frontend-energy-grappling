@@ -232,6 +232,7 @@ const CalendarPage: React.FC = () => {
           </div>
         </Content>
       </Layout>
+
     </ConfigProvider>
   );
 };

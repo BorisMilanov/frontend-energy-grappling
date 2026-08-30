@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router';
 
 import BJJHomePage from './pages/BJJHomePage';
 import ScheduleTable from './pages/ScheduleTable';
+import EventPage from './pages/EventPage';
 
 import CalendarPage from './pages/CalendarPage';
 import LoginPage from './pages/LoginPage';
@@ -22,6 +23,7 @@ function App(): React.JSX.Element {
         <Route path={ROUTES.about} element={<About />} />
 
         <Route path={ROUTES.calendar} element={<CalendarPage />} />
+        <Route path={ROUTES.event} element={<EventPage />} />
 
         <Route path={ROUTES.login} element={<LoginPage />} />
         <Route path={ROUTES.register} element={<RegisterPage />} />

@@ -8,6 +8,7 @@ export const ROUTES = {
   price: '/price',
   about: '/about',
   calendar: '/calendar',
+  event: '/event',
   login: '/login',
   register: '/register',
 } as const;
