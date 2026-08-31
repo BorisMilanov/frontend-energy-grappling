@@ -10,6 +10,7 @@ import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight } from 'lucide-rea
 import { useNavigate } from 'react-router';
 import { MenuOutlined, CloseOutlined, LogoutOutlined } from '@ant-design/icons';
 import herohomeImage from '../assets/team.jpg';
+import troyClubImage from '../assets/maint.jpg';
 import eventPoster from '../assets/event.png';
 import { clearSession, getUser } from '../services/authApi';
 import { ROUTES } from '../routes';
@@ -37,6 +38,7 @@ const BJJHomePage: React.FC = () => {
 
   const { ref: benefitsRef, isVisible: benefitsVisible } = useScrollReveal();
   const { ref: scheduleRef, isVisible: scheduleVisible } = useScrollReveal();
+  const { ref: troyRef, isVisible: troyVisible } = useScrollReveal();
   const { ref: ctaRef, isVisible: ctaVisible } = useScrollReveal();
 
   const columns: ColumnsType<ScheduleItem> = [
@@ -47,6 +49,57 @@ const BJJHomePage: React.FC = () => {
     { title: 'Чет', dataIndex: 'thu', key: 'thu' },
     { title: 'Пет', dataIndex: 'fri', key: 'fri' },
   ];
+
+  const troyScheduleData: ScheduleItem[] = [
+    { key: 'troy-1', time: '17:30 - 18:30', mon: 'Бразилско жиу-жицу', tue: '', wed: 'Бразилско жиу-жицу', thu: '', fri: 'Бразилско жиу-жицу' },
+  ];
+
+  const renderSchedule = (data: ScheduleItem[], disablePointerEvents = false) => {
+    if (isMobile) {
+      return (
+        <div style={{ display: 'grid', gap: 12 }}>
+          {data.map((item) => (
+            <Card key={item.key} size="small" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <Text strong style={{ display: 'block', fontSize: 16, color: '#1890ff', marginBottom: 12 }}>
+                {item.time}
+              </Text>
+              <Row gutter={[8, 8]}>
+                {[
+                  ['Понеделник', item.mon],
+                  ['Вторник', item.tue],
+                  ['Сряда', item.wed],
+                  ['Четвъртък', item.thu],
+                  ['Петък', item.fri],
+                ].filter(([, training]) => training).map(([day, training]) => (
+                  <Col xs={24} key={day}>
+                    <div style={{ background: '#f0f7ff', borderRadius: 8, padding: '10px 12px' }}>
+                      <Text strong>{day}</Text>
+                      <Text type="secondary" style={{ display: 'block', marginTop: 2 }}>{training}</Text>
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            </Card>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <Table
+        dataSource={data}
+        columns={columns}
+        pagination={false}
+        bordered
+        scroll={{ x: 700 }}
+        style={{
+          boxShadow: scheduleHover ? '0 8px 24px rgba(24,144,255,0.15)' : '0 4px 12px rgba(0,0,0,0.05)',
+          transition: 'box-shadow 0.3s ease',
+          pointerEvents: disablePointerEvents ? 'none' : undefined,
+        }}
+      />
+    );
+  };
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -216,22 +269,50 @@ const BJJHomePage: React.FC = () => {
                 </Text>
               )}
             </div>
-            <Table
-              dataSource={scheduleData}
-              columns={columns}
-              pagination={false}
-              bordered
-              scroll={{ x: 700 }}
-              style={{
-                boxShadow: scheduleHover ? '0 8px 24px rgba(24,144,255,0.15)' : '0 4px 12px rgba(0,0,0,0.05)',
-                transition: 'box-shadow 0.3s ease',
-                pointerEvents: 'none',
-              }}
-            />
+            {renderSchedule(scheduleData, true)}
           </section>
 
           {/* ── TRAINER ── */}
           <TrainerSection />
+
+          {/* ── TROY CLUB ── */}
+          <section
+            id="troy-club"
+            ref={troyRef}
+            style={{
+              ...revealStyle(troyVisible),
+              padding: '90px 10%',
+              background: '#fff',
+            }}
+          >
+            <Row gutter={[48, 40]} align="middle" justify="center">
+              <Col xs={24} md={12}>
+                <img
+                  src={troyClubImage}
+                  alt="Energy Grappling в Троян"
+                  style={{ width: '100%', display: 'block', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
+                />
+              </Col>
+              <Col xs={24} md={12}>
+                <Tag color="blue" style={{ fontSize: 14, padding: '6px 18px', marginBottom: 12 }}>
+                  Energy Grappling Троян
+                </Tag>
+                <Title level={2}>Тренирай с нас и в Троян</Title>
+                <Paragraph style={{ fontSize: 17, lineHeight: 1.8, marginBottom: 0 }}>
+                  Energy Grappling вече е и в Троян. Очакват те качествени тренировки по бразилско жиу-жицу, приятелска атмосфера и общност, в която всеки може да започне и да се развива.
+                </Paragraph>
+              </Col>
+            </Row>
+            <div style={{ marginTop: 56 }}>
+              <div style={{ textAlign: 'center', marginBottom: 28 }}>
+                <Tag color="blue" style={{ fontSize: 14, padding: '6px 18px', marginBottom: 12 }}>
+                  График за Троян
+                </Tag>
+                <Title level={3} style={{ margin: 0 }}>График на тренировките</Title>
+              </div>
+              {renderSchedule(troyScheduleData)}
+            </div>
+          </section>
 
           {/* ── CTA ── */}
           <section
