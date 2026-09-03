@@ -6,17 +6,19 @@ import {
 
 const { useBreakpoint } = Grid;
 import type { ColumnsType } from 'antd/es/table';
-import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight, Award, Medal } from 'lucide-react';
+import { Users, ShieldCheck, Trophy, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { MenuOutlined, CloseOutlined, LogoutOutlined } from '@ant-design/icons';
 import herohomeImage from '../assets/team.jpg';
 import troyClubImage from '../assets/maint.jpg';
 import eventPoster from '../assets/event.png';
+import sinanTrainerImage from '../assets/SinanTrainer.png';
+import djaniTrainerImage from '../assets/DjaniTrener.png';
 import { clearSession, getUser } from '../services/authApi';
 import { ROUTES } from '../routes';
 import { scheduleData, type ScheduleItem } from '../data/scheduleData';
 import { useScrollReveal, revealStyle } from '../hooks/useScrollReveal';
-import TrainerSection from './TrainerSection';
+import TrainerSection, { TrainerProfile } from './TrainerSection';
 import Footer from './Footer';
 
 const { Header, Content } = Layout;
@@ -306,6 +308,22 @@ const BJJHomePage: React.FC = () => {
                 </Paragraph>
               </Col>
             </Row>
+            <TrainerProfile
+              name="Синан Асенов"
+              role="Треньор и състезател · Energy Grappling Троян"
+              experience="5 години"
+              bio="Синан Асенов е треньор и състезател в Energy Grappling Троян. Той помага на всеки трениращ да изгражда стабилни основи и увереност на татамито."
+              imageSrc={sinanTrainerImage}
+              beltLabel="BJJ Blue Belt"
+              beltColor="#1890ff"
+            />
+            <TrainerProfile
+              name="Джани Асенов"
+              role="Треньор и състезател · Energy Grappling Троян"
+              experience="5 години"
+              bio="Джани Асенов е треньор и състезател в Energy Grappling Троян. Работи с практикуващи от всички нива и подкрепя развитието им в бразилското жиу-жицу."
+              imageSrc={djaniTrainerImage}
+            />
             <div style={{ marginTop: 56 }}>
               <div style={{ textAlign: 'center', marginBottom: 28 }}>
                 <Tag color="blue" style={{ fontSize: 14, padding: '6px 18px', marginBottom: 12 }}>
@@ -314,52 +332,6 @@ const BJJHomePage: React.FC = () => {
                 <Title level={3} style={{ margin: 0 }}>График на тренировките</Title>
               </div>
               {renderSchedule(troyScheduleData)}
-            </div>
-            <div style={{ marginTop: 64 }}>
-              <div style={{ textAlign: 'center', marginBottom: 32 }}>
-                <Tag color="blue" style={{ fontSize: 14, padding: '6px 18px', marginBottom: 12 }}>
-                  Треньори в Троян
-                </Tag>
-                <Title level={3} style={{ margin: 0 }}>Запознай се с екипа</Title>
-              </div>
-              <Row gutter={[32, 32]} justify="center">
-                {[
-                  { name: 'Джани Асенов' },
-                  { name: 'Синан Асенов' },
-                ].map((coach) => (
-                  <Col xs={24} md={12} key={coach.name}>
-                    <Card bordered={false} style={{ height: '100%', borderRadius: 8, boxShadow: '0 4px 20px rgba(0,0,0,0.07)' }}>
-                      <Row gutter={[24, 20]} align="middle">
-                        <Col flex="128px">
-                          <div style={{ width: 128, height: 128, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e6f4ff', borderRadius: '50%', color: '#1890ff' }}>
-                            <Users size={48} />
-                          </div>
-                        </Col>
-                        <Col flex="auto">
-                          <Title level={3} style={{ marginBottom: 4 }}>{coach.name}</Title>
-                          <Paragraph type="secondary" style={{ fontSize: 15, marginBottom: 16 }}>
-                            Треньор и състезател · Energy Grappling Троян
-                          </Paragraph>
-                          <Row gutter={[12, 12]}>
-                            <Col xs={12}>
-                              <div style={{ textAlign: 'center', padding: '10px 6px', background: '#f0f7ff', borderRadius: 8 }}>
-                                <Medal size={19} color="#7e57c2" />
-                                <Text strong style={{ display: 'block', marginTop: 4 }}>Лилав колан</Text>
-                              </div>
-                            </Col>
-                            <Col xs={12}>
-                              <div style={{ textAlign: 'center', padding: '10px 6px', background: '#f0f7ff', borderRadius: 8 }}>
-                                <Award size={19} color="#1890ff" />
-                                <Text strong style={{ display: 'block', marginTop: 4 }}>5 години опит</Text>
-                              </div>
-                            </Col>
-                          </Row>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
             </div>
           </section>
 

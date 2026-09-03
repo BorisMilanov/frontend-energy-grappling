@@ -7,6 +7,81 @@ import trenerImg2 from '../assets/trener2.png';
 
 const { Title, Paragraph, Text } = Typography;
 
+type TrainerProfileProps = {
+  name: string;
+  role: string;
+  experience: string;
+  bio: string;
+  imageSrc?: string;
+  beltLabel?: string;
+  beltColor?: string;
+};
+
+export const TrainerProfile: React.FC<TrainerProfileProps> = ({
+  name, role, experience, bio, imageSrc, beltLabel = 'BJJ Purple Belt', beltColor = '#7e57c2',
+}) => {
+  const { ref, isVisible } = useScrollReveal();
+
+  return (
+    <div ref={ref} style={{ ...revealStyle(isVisible), marginTop: 64 }}>
+      <Row gutter={[48, 40]} align="middle" justify="center">
+        <Col xs={24} sm={24} md={8} style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <Avatar size={340} src={imageSrc} style={{ background: '#e6f4ff', color: '#1890ff' }} icon={imageSrc ? undefined : <Users size={100} />}>
+              EG
+            </Avatar>
+            <div style={{
+              position: 'absolute', bottom: 8, right: -10,
+              background: beltColor, borderRadius: 20,
+              padding: '4px 12px', color: 'white',
+              fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+              border: '2px solid white',
+            }}>
+              {beltLabel}
+            </div>
+          </div>
+        </Col>
+
+        <Col xs={24} sm={24} md={16}>
+          <Card
+            bordered={false}
+            style={{ background: 'white', borderRadius: 16, boxShadow: '0 4px 20px rgba(0,0,0,0.07)' }}
+          >
+            <Title level={3} style={{ marginBottom: 4 }}>{name}</Title>
+            <Paragraph type="secondary" style={{ fontSize: 15, marginBottom: 20 }}>
+              {role}
+            </Paragraph>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              {[
+                { icon: <Award size={20} />, label: 'Опит', value: experience },
+                { icon: <Star size={20} />, label: 'Клас', value: 'Всички нива' },
+              ].map((item) => (
+                <Col xs={12} sm={12} md={12} lg={6} key={item.label}>
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    textAlign: 'center', padding: '14px 10px',
+                    background: '#f0f7ff', borderRadius: 12,
+                  }}>
+                    <div style={{ color: '#1890ff', marginBottom: 6 }}>{item.icon}</div>
+                    <Text type="secondary" style={{ fontSize: 11, display: 'block', marginBottom: 2 }}>
+                      {item.label}
+                    </Text>
+                    <Text strong style={{ fontSize: 13 }}>{item.value}</Text>
+                  </div>
+                </Col>
+              ))}
+            </Row>
+            <Paragraph style={{ fontSize: 16, color: '#333', lineHeight: 2, marginBottom: 0, letterSpacing: '0.01em' }}>
+              {bio}
+            </Paragraph>
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+};
+
 const TrainerSection: React.FC = () => {
   const { ref, isVisible } = useScrollReveal();
   const { ref: ref2, isVisible: isVisible2 } = useScrollReveal();
@@ -178,6 +253,7 @@ const TrainerSection: React.FC = () => {
 
         </Row>
       </div>
+
     </section>
     
   );
