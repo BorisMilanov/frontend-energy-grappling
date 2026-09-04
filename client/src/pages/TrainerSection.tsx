@@ -215,7 +215,7 @@ const TrainerSection: React.FC = () => {
             >
               <Title level={3} style={{ marginBottom: 4 }}>Дони Димитров</Title>
               <Paragraph type="secondary" style={{ fontSize: 15, marginBottom: 20 }}>
-                Заместник треньор · Energy Grappling
+                Треньор · Energy Grappling
               </Paragraph>
 
               {/* Stats */}
@@ -244,7 +244,7 @@ const TrainerSection: React.FC = () => {
 
               {/* Bio */}
               <Paragraph style={{ fontSize: 16, color: '#333', lineHeight: 2, marginBottom: 0, letterSpacing: '0.01em' }}>
-                Дони Димитров е заместник треньор на Energy Grappling и страстен практик на бразилско жиу жицу с над 20 години опит.
+                Дони Димитров е треньор на Energy Grappling и страстен практик на бразилско жиу жицу с над 20 години опит.
                 Той е първият треньор в Ловеч, който основава ММА зала. Има огромен опит в преподаването на бойни изкуства и е вдъхновение за много млади спортисти в региона.
                 Един от най-доказаните треньори в Ловеч. Вниманието му към детайлите го правят изключителен треньор, който помага на учениците си да развият силни основи и да постигнат своите цели в BJJ и MMA.
               </Paragraph>
