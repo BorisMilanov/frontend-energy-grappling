@@ -192,17 +192,17 @@ const BJJHomePage: React.FC = () => {
             justifyContent: 'center', textAlign: 'center', color: 'white', padding: '0 20px',
           }}>
             <div style={{ maxWidth: 800 }}>
-              <Title style={{ color: 'white', fontSize: 'clamp(32px,5vw,60px)', marginBottom: 24 }}>
-                ПРОМЕНИ ЖИВОТА СИ С <br />
-                <span style={{ color: '#1890ff' }}>БРАЗИЛСКО ЖИУ-ЖИЦУ</span>
+              <Title style={{ color: 'white', fontSize: 'clamp(27px,6vw,60px)', marginBottom: 82 }}>
+                ПРОМЕНИ ЖИВОТА СИ С 
+                <span style={{ color: '#1890ff' }}> БРАЗИЛСКО ЖИУ-ЖИЦУ</span>
               </Title>
-              <Paragraph style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.2rem', marginBottom: 40 }}>
+              <Paragraph style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.6rem', marginBottom: 39 }}>
                 Добре дошли в най-гостоприемната зала за бойни изкуства.
                 Започни своето пътешествие днес!
               </Paragraph>
               <Space
                 direction={isMobile ? 'vertical' : 'horizontal'}
-                size="large"
+                size="small"
                 style={isMobile ? { display: 'flex', alignItems: 'center', width: '100%' } : undefined}
               >
                 <Button type="primary" size="large" style={{ height: 50, ...(isMobile && { width: 240 }) }} onClick={() => navigate(ROUTES.event)}>

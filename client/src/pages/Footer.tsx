@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
           <Title level={5} style={{ color: 'white', marginBottom: 16 }}>Локация</Title>
           <Space direction="vertical" size={10}>
             <Text style={{ color: 'rgba(255,255,255,0.65)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <MapPin size={15} />&nbsp;ул. търговска 42, Lovech, Bulgaria, 5500
+              <MapPin size={15} />&nbsp;ул. Търговска 42, Lovech, Bulgaria, 5500
             </Text>
             <Text style={{ color: 'rgba(255,255,255,0.65)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Phone size={15} />&nbsp;+359 88 000 0000
