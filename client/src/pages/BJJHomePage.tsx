@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Layout, Menu, Button, Row, Col, Typography, Card, Table,
-  Space, ConfigProvider, Tag, Grid, Modal,
+  Space, ConfigProvider, Tag, Grid, Modal, Form, Input,
 } from 'antd';
 
 const { useBreakpoint } = Grid;
@@ -24,6 +24,12 @@ import Footer from './Footer';
 const { Header, Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
 
+interface InquiryFormValues {
+  name: string;
+  email: string;
+  phone?: string;
+  message: string;
+}
 
 
 const BJJHomePage: React.FC = () => {
@@ -107,6 +113,20 @@ const BJJHomePage: React.FC = () => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
     setMobileOpen(false);
+  };
+
+  const sendInquiry = (values: InquiryFormValues) => {
+    const subject = `Запитване от ${values.name}`;
+    const body = [
+      `Име: ${values.name}`,
+      `Имейл: ${values.email}`,
+      `Телефон: ${values.phone || 'Не е посочен'}`,
+      '',
+      'Съобщение:',
+      values.message,
+    ].join('\n');
+
+    window.location.href = `mailto:borissandev4@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   // Re-read on every render so the bar flips right after login / logout.
@@ -347,14 +367,58 @@ const BJJHomePage: React.FC = () => {
           >
             <div ref={ctaRef}>
               <Title level={2} style={{ color: 'white', marginBottom: 24 }}>
-                Не знаеш откъде да започнеш?
+                Изпрати запитване
               </Title>
               <Paragraph style={{ color: 'rgba(255,255,255,0.7)', fontSize: 18, marginBottom: 32 }}>
-                Ела на място, разгледай залата.
+                Ще се свържем с теб възможно най-скоро.
               </Paragraph>
-              <Button type="primary" size="middle" icon={<CheckCircle2 size={20} />} style={{ height: 54, display: 'flex', alignItems: 'center', margin: '0 auto' }}>
-                ЗАПИШИ СЕ СЕГА
-              </Button>
+              <Form<InquiryFormValues>
+                layout="vertical"
+                onFinish={sendInquiry}
+                style={{ maxWidth: 620, margin: '0 auto', textAlign: 'left' }}
+              >
+                <Row gutter={16}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label={<Text style={{ color: 'white' }}>Име</Text>}
+                      name="name"
+                      rules={[{ required: true, message: 'Моля, въведи име.' }]}
+                    >
+                      <Input size="large" placeholder="Твоето име" />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label={<Text style={{ color: 'white' }}>Имейл</Text>}
+                      name="email"
+                      rules={[
+                        { required: true, message: 'Моля, въведи имейл.' },
+                        { type: 'email', message: 'Въведи валиден имейл.' },
+                      ]}
+                    >
+                      <Input size="large" placeholder="email@example.com" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Form.Item label={<Text style={{ color: 'white' }}>Телефон</Text>} name="phone">
+                  <Input size="large" type="tel" placeholder="+359895623070" />
+                </Form.Item>
+                <Form.Item
+                  label={<Text style={{ color: 'white' }}>Съобщение</Text>}
+                  name="message"
+                  rules={[{ required: true, message: 'Моля, напиши своето запитване.' }]}
+                >
+                  <Input.TextArea rows={5} placeholder="Как можем да помогнем?" />
+                </Form.Item>
+                <Button
+                  htmlType="submit"
+                  type="primary"
+                  icon={<CheckCircle2 size={20} />}
+                  style={{ height: 54, display: 'flex', alignItems: 'center', margin: '0 auto' }}
+                >
+                  ИЗПРАТИ ЗАПИТВАНЕ
+                </Button>
+              </Form>
             </div>
           </section>
         </Content>

@@ -28,6 +28,9 @@ const Footer: React.FC = () => {
               <MapPin size={15} />&nbsp;ул. Търговска 42, Lovech, Bulgaria, 5500
             </Text>
             <Text style={{ color: 'rgba(255,255,255,0.65)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <MapPin size={15} />&nbsp;Спортен Център Троян, ул. Опълченска 1А, Троян
+            </Text>
+            <Text style={{ color: 'rgba(255,255,255,0.65)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Phone size={15} />&nbsp;+359 88 000 0000
             </Text>
           </Space>
