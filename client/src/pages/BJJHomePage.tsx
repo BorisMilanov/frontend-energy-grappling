@@ -401,7 +401,7 @@ const BJJHomePage: React.FC = () => {
                   </Col>
                 </Row>
                 <Form.Item label={<Text style={{ color: 'white' }}>Телефон</Text>} name="phone">
-                  <Input size="large" type="tel" placeholder="+359895623070" />
+                  <Input size="large" type="tel" placeholder="+359 ..." />
                 </Form.Item>
                 <Form.Item
                   label={<Text style={{ color: 'white' }}>Съобщение</Text>}
